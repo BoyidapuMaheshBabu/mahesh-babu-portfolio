@@ -190,6 +190,9 @@ html {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: rgba(186, 230, 253, 0.64);
   font-family: 'Oxanium', sans-serif;
   font-size: 10px;
@@ -197,13 +200,39 @@ html {
   letter-spacing: 0.2em;
   text-decoration: none;
   white-space: nowrap;
-  transform: translateX(-50%);
-  transition: color 160ms ease;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, 8px);
+  transition:
+    opacity 520ms ease,
+    transform 520ms cubic-bezier(0.2, 0.75, 0.25, 1),
+    color 160ms ease,
+    visibility 0s linear 520ms;
+}
+
+.scroll-cue.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+  transition:
+    opacity 520ms ease,
+    transform 520ms cubic-bezier(0.2, 0.75, 0.25, 1),
+    color 160ms ease,
+    visibility 0s;
 }
 
 .scroll-cue:hover,
 .scroll-cue:focus-visible {
   color: #7dd3fc;
+}
+
+.scroll-cue:focus-visible {
+  outline: 1px solid rgba(125, 211, 252, 0.75);
+  outline-offset: 7px;
+  border-radius: 999px;
 }
 
 .scroll-cue__arrow {
