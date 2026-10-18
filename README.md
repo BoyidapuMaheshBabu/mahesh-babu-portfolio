@@ -1,25 +1,41 @@
-# TechText — Built from Scratch
+# Portfolio — TechText From Scratch
 
-This branch is a clean workspace for building an interactive tech-style wordmark from first principles.
+This branch is a hands-on experiment for building a modern software-engineering portfolio interface and then implementing its animated name wordmark from first principles.
 
-## Goal
+## Current stage
 
-Create an animated name wordmark for the portfolio hero using React and plain CSS/JavaScript. The implementation should be understood and built in small, verifiable steps rather than copied as a complete component.
+The first page foundation uses a near-black canvas, blue/cyan lighting, a subtle technical grid, circuit-style geometry, and a code panel. The hero introduces **Mahesh Babu — AI Software Engineer**.
+
+The animated TechText effect is intentionally **not implemented yet**. We will build it step by step and understand the rendering and interaction logic before adding polish.
 
 ## Build sequence
 
-1. Render centered, responsive text.
-2. Measure text and prepare a canvas drawing surface.
-3. Draw the letters as solid shapes.
-4. Reveal dashed letter outlines near the pointer.
-5. Add specks and click interaction.
-6. Handle resizing, touch devices, and reduced-motion preferences.
+1. Establish the responsive page and visual direction.
+2. Render and measure the hero wordmark.
+3. Draw text through the Canvas API.
+4. Build the dashed-letter reveal interaction.
+5. Add specks, click response, and pointer/touch handling.
+6. Refine resizing, accessibility, and reduced-motion behavior.
 
-## Working rules
+## Run locally
 
-- Keep this branch minimal: initially, this README is the only file.
-- Add source files only as we implement each step and understand why it is needed.
-- Use the React and Vite setup already available in the main project; avoid unnecessary dependencies.
-- Test each small change before adding the next behavior.
+Requirements: Node.js, npm, and Git.
 
-The goal is not just to reproduce an effect. It is to understand the rendering, geometry, interaction, and animation well enough to maintain and extend it independently.
+```bash
+npm install
+npm run dev
+```
+
+Run the production build:
+
+```bash
+npm run build
+npm run preview
+```
+
+## Principles
+
+- Keep the implementation understandable and incremental.
+- Avoid importing the completed React Bits component.
+- Use the existing React/Vite stack without adding unnecessary dependencies.
+- Test the behavior as each interaction is introduced.
