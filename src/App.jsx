@@ -12,7 +12,7 @@ export default function App() {
           text="MAHESH BABU"
           fontFamily="'Space Grotesk', sans-serif"
           fontWeight={600}
-          fontSize={150}
+          fontSize={260}
           letterSpacing={-0.05}
           color="#f8fafc"
           accentColor="#38bdf8"
