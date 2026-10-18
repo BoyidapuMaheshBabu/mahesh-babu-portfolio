@@ -94,11 +94,18 @@ const TechText = ({
     const scratchCtx = scratch.getContext('2d');
     if (!container || !canvas || !ctx || !scratchCtx) return undefined;
 
+    const floatingCanvas = document.createElement('canvas');
+    floatingCanvas.className = 'tech-text-floating-canvas';
+    floatingCanvas.setAttribute('aria-hidden', 'true');
+    const floatingCtx = floatingCanvas.getContext('2d');
+    if (!floatingCtx) return undefined;
+    document.body.appendChild(floatingCanvas);
+
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
     let width = 1, height = 1, dpr = 1, raf = 0, last = performance.now();
     let visible = false, alive = true, layoutKey = '', requestedFont = '';
     let word = null, glyphs = [], presence = 0, clock = 0, pulse = 0;
-    let placed = false, dragging = -1, cursor = '';
+    let placed = false, dragging = -1, cursor = '', floatingVisible = false;
     let introClock = 0, introKind = '', introducing = false;
     let fontsReady = !document.fonts, guideAlpha = 0;
     const kicks = [];
@@ -246,20 +253,6 @@ const TechText = ({
       dragging = -1;
       frame.index = -1;
       return next;
-    };
-
-    // Keep the full glyph sprite inside the canvas while dragging. Use the
-    // padded sprite bounds (not only the visible glyph box) to avoid clipping.
-    const clampGlyphOffset = (glyph, x, y) => {
-      const arts = [glyph.fill, glyph.dashes];
-      const left = Math.min(...arts.map(art => art.left));
-      const top = Math.min(...arts.map(art => art.top));
-      const right = Math.max(...arts.map(art => art.left + art.image.width / dpr));
-      const bottom = Math.max(...arts.map(art => art.top + art.image.height / dpr));
-      return {
-        x: Math.max(-left, Math.min(width - right, x)),
-        y: Math.max(-top, Math.min(height - bottom, y)),
-      };
     };
 
     const glyphAt = (x, y) => {
@@ -644,9 +637,9 @@ const TechText = ({
       let moving = false;
       glyphs.forEach((glyph, i) => {
         if (i === dragging) {
-          const target = clampGlyphOffset(glyph, pointer.x - grab.x, pointer.y - grab.y);
-          glyph.offset.x = approach(glyph.offset.x, target.x, dt, 0.03);
-          glyph.offset.y = approach(glyph.offset.y, target.y, dt, 0.03);
+          // Let the letter follow the pointer freely, even beyond this component.
+          glyph.offset.x = approach(glyph.offset.x, pointer.x - grab.x, dt, 0.03);
+          glyph.offset.y = approach(glyph.offset.y, pointer.y - grab.y, dt, 0.03);
           glyph.velocity.x = 0; glyph.velocity.y = 0; moving = true; return;
         }
         const { offset, velocity } = glyph;
@@ -655,10 +648,10 @@ const TechText = ({
         }
         velocity.x += (-SPRING * offset.x - damping * velocity.x) * dt;
         velocity.y += (-SPRING * offset.y - damping * velocity.y) * dt;
-        const nextOffset = clampGlyphOffset(glyph, offset.x + velocity.x * dt, offset.y + velocity.y * dt);
-        if (nextOffset.x !== offset.x + velocity.x * dt) velocity.x = 0;
-        if (nextOffset.y !== offset.y + velocity.y * dt) velocity.y = 0;
-        offset.x = nextOffset.x; offset.y = nextOffset.y; moving = true;
+        // No positional clamp: the existing spring brings the letter home after release.
+        offset.x += velocity.x * dt;
+        offset.y += velocity.y * dt;
+        moving = true;
       });
       let typing = -1;
       if (introducing && introKind === 'type') {
@@ -729,6 +722,8 @@ const TechText = ({
           if (progress < 0.72 + 0.28 * lead) { drawFilling(glyph, lead, progress, view); return; }
         }
         if (glyph.shown < 0.001) return;
+        // Moved letters are drawn on the viewport canvas so the local canvas cannot clip them.
+        if (Math.hypot(glyph.offset.x, glyph.offset.y) > 1) return;
         if (glyph.outline < 0.999) {
           ctx.globalAlpha = (1 - glyph.outline) * glyph.shown;
           blit(ctx, glyph.fill, glyph.offset.x, glyph.offset.y, 0, 0);
@@ -741,6 +736,44 @@ const TechText = ({
       });
       if (presence > 0.001) drawReveal(s);
       drawFrame(s, accent);
+
+      // Render displaced glyph sprites in viewport coordinates. The overlay is
+      // pointer-transparent, so pointer capture and normal page interactions remain intact.
+      const hasFloatingGlyph = glyphs.some(glyph =>
+        Math.hypot(glyph.offset.x, glyph.offset.y) > 1 && glyph.shown >= 0.001
+      );
+      if (hasFloatingGlyph || floatingVisible) {
+        floatingCtx.setTransform(1, 0, 0, 1, 0, 0);
+        floatingCtx.globalCompositeOperation = 'source-over';
+        floatingCtx.globalAlpha = 1;
+        floatingCtx.clearRect(0, 0, floatingCanvas.width, floatingCanvas.height);
+        if (hasFloatingGlyph) {
+          const rect = container.getBoundingClientRect();
+          glyphs.forEach(glyph => {
+            if (Math.hypot(glyph.offset.x, glyph.offset.y) <= 1 || glyph.shown < 0.001) return;
+            if (glyph.outline < 0.999) {
+              floatingCtx.globalAlpha = (1 - glyph.outline) * glyph.shown;
+              floatingCtx.drawImage(
+                glyph.fill.image,
+                Math.round((rect.left + glyph.fill.left + glyph.offset.x) * dpr),
+                Math.round((rect.top + glyph.fill.top + glyph.offset.y) * dpr),
+              );
+            }
+            if (glyph.outline > 0.001) {
+              floatingCtx.globalAlpha = glyph.outline * glyph.shown;
+              floatingCtx.drawImage(
+                glyph.dashes.image,
+                Math.round((rect.left + glyph.dashes.left + glyph.offset.x) * dpr),
+                Math.round((rect.top + glyph.dashes.top + glyph.offset.y) * dpr),
+              );
+            }
+          });
+        }
+        floatingCtx.globalAlpha = 1;
+      }
+      floatingVisible = hasFloatingGlyph;
+      floatingCanvas.style.visibility = floatingVisible ? 'visible' : 'hidden';
+
       const settling =
         moving || introducing || kicks.length > 0 ||
         (guideAlpha > 0.005 && guideAlpha < 0.995) ||
@@ -762,6 +795,8 @@ const TechText = ({
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
+      floatingCanvas.width = Math.round(window.innerWidth * dpr);
+      floatingCanvas.height = Math.round(window.innerHeight * dpr);
       layoutKey = '';
       wake();
     };
@@ -822,6 +857,8 @@ const TechText = ({
 
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(container);
+    window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener('scroll', wake, { passive: true });
     const intersectionObserver = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
       wake();
@@ -842,6 +879,9 @@ const TechText = ({
       cancelAnimationFrame(raf);
       wakeRef.current = () => {};
       resizeObserver.disconnect();
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('scroll', wake);
+      floatingCanvas.remove();
       intersectionObserver.disconnect();
       themeObserver.disconnect();
       schemeQuery?.removeEventListener?.('change', wake);
