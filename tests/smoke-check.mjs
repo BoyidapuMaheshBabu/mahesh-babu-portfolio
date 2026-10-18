@@ -7,13 +7,15 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const read = (path) => readFile(resolve(root, path), 'utf8');
 
-const [html, entry, app, css, packageText, viteConfig] = await Promise.all([
+const [html, entry, app, css, packageText, viteConfig, techText, techTextCss] = await Promise.all([
   read('index.html'),
   read('src/main.jsx'),
   read('src/App.jsx'),
   read('src/styles.css'),
   read('package.json'),
-  read('vite.config.js')
+  read('vite.config.js'),
+  read('src/components/TechText.jsx'),
+  read('src/components/TechText.css')
 ]);
 const packageJson = JSON.parse(packageText);
 
@@ -26,6 +28,11 @@ assert.match(entry, /import '\.\/styles\.css'/, 'React entry point must import t
 assert.match(viteConfig, /@vitejs\/plugin-react/, 'Vite must configure the React plugin');
 assert.equal(packageJson.scripts.test, 'node tests/smoke-check.mjs', 'npm test must run this smoke check');
 assert.equal(packageJson.dependencies.react, packageJson.dependencies['react-dom'], 'React and React DOM versions must match');
+assert.match(app, /import TechText from '\.\/components\/TechText\.jsx'/, 'The portfolio hero must import TechText');
+assert.match(app, /<TechText[\\s\\S]*?text="MAHESH BABU"[\\s\\S]*?fontSize=\\{150\\}/, 'The hero must render the animated name wordmark');
+assert.match(techText, /getContext\('2d'\)/, 'TechText must render using its canvas implementation');
+assert.match(techTextCss, /\.tech-text-canvas/, 'TechText must include its canvas styles');
+assert.match(css, /\.tech-wordmark-stage/, 'The portfolio must style the TechText hero stage');
 for (const name of ['react', 'react-dom', 'lucide-react', 'vite', '@vitejs/plugin-react']) {
   const version = packageJson.dependencies[name] ?? packageJson.devDependencies[name];
   assert.ok(version && !version.includes('latest') && !version.startsWith('^') && !version.startsWith('~'),
