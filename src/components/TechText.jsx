@@ -248,14 +248,34 @@ const TechText = ({
       return next;
     };
 
+    // Keep the full glyph sprite inside the canvas while dragging. Use the
+    // padded sprite bounds (not only the visible glyph box) to avoid clipping.
+    const clampGlyphOffset = (glyph, x, y) => {
+      const arts = [glyph.fill, glyph.dashes];
+      const left = Math.min(...arts.map(art => art.left));
+      const top = Math.min(...arts.map(art => art.top));
+      const right = Math.max(...arts.map(art => art.left + art.image.width / dpr));
+      const bottom = Math.max(...arts.map(art => art.top + art.image.height / dpr));
+      return {
+        x: Math.max(-left, Math.min(width - right, x)),
+        y: Math.max(-top, Math.min(height - bottom, y)),
+      };
+    };
+
     const glyphAt = (x, y) => {
-      if (!word || y < word.top - 24 || y > word.bottom + 24) return -1;
+      if (!word) return -1;
       let best = -1, bestDistance = Infinity;
       glyphs.forEach((glyph, i) => {
+        // Hit-test the glyph at its current position, including any drag offset,
+        // so letters remain interactive after they have moved vertically.
         const x1 = glyph.box.x1 + glyph.offset.x;
         const x2 = glyph.box.x2 + glyph.offset.x;
-        const d = x < x1 ? x1 - x : x > x2 ? x - x2 : 0;
-        if (d < bestDistance) { bestDistance = d; best = i; }
+        const y1 = glyph.box.y1 + glyph.offset.y - 24;
+        const y2 = glyph.box.y2 + glyph.offset.y + 24;
+        const dx = x < x1 ? x1 - x : x > x2 ? x - x2 : 0;
+        const dy = y < y1 ? y1 - y : y > y2 ? y - y2 : 0;
+        const distance = Math.hypot(dx, dy);
+        if (distance < bestDistance) { bestDistance = distance; best = i; }
       });
       return bestDistance < 28 ? best : -1;
     };
@@ -624,8 +644,9 @@ const TechText = ({
       let moving = false;
       glyphs.forEach((glyph, i) => {
         if (i === dragging) {
-          glyph.offset.x = approach(glyph.offset.x, pointer.x - grab.x, dt, 0.03);
-          glyph.offset.y = approach(glyph.offset.y, pointer.y - grab.y, dt, 0.03);
+          const target = clampGlyphOffset(glyph, pointer.x - grab.x, pointer.y - grab.y);
+          glyph.offset.x = approach(glyph.offset.x, target.x, dt, 0.03);
+          glyph.offset.y = approach(glyph.offset.y, target.y, dt, 0.03);
           glyph.velocity.x = 0; glyph.velocity.y = 0; moving = true; return;
         }
         const { offset, velocity } = glyph;
@@ -634,7 +655,10 @@ const TechText = ({
         }
         velocity.x += (-SPRING * offset.x - damping * velocity.x) * dt;
         velocity.y += (-SPRING * offset.y - damping * velocity.y) * dt;
-        offset.x += velocity.x * dt; offset.y += velocity.y * dt; moving = true;
+        const nextOffset = clampGlyphOffset(glyph, offset.x + velocity.x * dt, offset.y + velocity.y * dt);
+        if (nextOffset.x !== offset.x + velocity.x * dt) velocity.x = 0;
+        if (nextOffset.y !== offset.y + velocity.y * dt) velocity.y = 0;
+        offset.x = nextOffset.x; offset.y = nextOffset.y; moving = true;
       });
       let typing = -1;
       if (introducing && introKind === 'type') {
