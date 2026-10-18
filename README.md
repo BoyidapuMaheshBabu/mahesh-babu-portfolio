@@ -4,8 +4,6 @@
 
 A responsive, source-first portfolio about learning software engineering by investigating problems, building products, testing what works, and improving the implementation. Built with React and Vite, with a live read-only GitHub explorer.
 
-**Repository:** [BoyidapuMaheshBabu/Portfolio-](https://github.com/BoyidapuMaheshBabu/Portfolio-)
-
 ## Features
 
 - Animated hero, orbital glassmorphism, motion-led project cards, scroll reveals, and responsive navigation.
