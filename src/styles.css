@@ -49,9 +49,17 @@ html, body {
 
 /* ── Wordmark canvas container ──────────────────────────────────── */
 .wordmark {
-  width: min(960px, calc(100% - 48px));
-  height: clamp(100px, 20vw, 220px);
+  width: min(1400px, calc(100% - 24px));
+  height: clamp(150px, 30vw, 360px);
   overflow: visible;
+}
+
+/* Give the wordmark more room on compact screens without clipping. */
+@media (max-width: 600px) {
+  .wordmark {
+    width: calc(100% - 16px);
+    height: clamp(120px, 34vw, 210px);
+  }
 }
 
 /* ── Reduced motion ─────────────────────────────────────────────── */
