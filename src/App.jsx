@@ -102,7 +102,7 @@ export default function App() {
           Mahesh Babu — AI-Native Software Engineer and Product Builder
         </h1>
 
-        <div className="identity-lockup">
+        <div className="identity-lockup" data-reveal>
           <div className="wordmark" aria-hidden="true">
             <TechText
               text="MAHESH BABU"
