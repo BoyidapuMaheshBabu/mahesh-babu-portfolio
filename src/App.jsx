@@ -53,6 +53,26 @@ export default function App() {
       setScrollProgress(nextProgress);
     };
 
+    // Match the main-branch motion system: reveal each section once it enters view.
+    const revealItems = document.querySelectorAll('[data-reveal]');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let revealObserver;
+
+    if (reduceMotion) {
+      revealItems.forEach(item => item.classList.add('is-visible'));
+    } else if ('IntersectionObserver' in window) {
+      revealObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        });
+      }, { threshold: 0.12 });
+      revealItems.forEach(item => revealObserver.observe(item));
+    } else {
+      revealItems.forEach(item => item.classList.add('is-visible'));
+    }
+
     updateScrollProgress();
     window.addEventListener('scroll', updateScrollProgress, { passive: true });
     window.addEventListener('resize', updateScrollProgress, { passive: true });
@@ -60,6 +80,7 @@ export default function App() {
     return () => {
       window.removeEventListener('scroll', updateScrollProgress);
       window.removeEventListener('resize', updateScrollProgress);
+      revealObserver?.disconnect();
     };
   }, []);
 
@@ -140,21 +161,21 @@ export default function App() {
         aria-labelledby="engineering-loop-title"
       >
         <div className="engineering-loop-inner">
-          <p className="section-kicker">
+          <p className="section-kicker" data-reveal>
             <span className="section-kicker__line" aria-hidden="true" />
             HOW I ENGINEER
           </p>
-          <h2 id="engineering-loop-title">
+          <h2 id="engineering-loop-title" data-reveal>
             From problem <span>to product.</span>
           </h2>
-          <p className="engineering-loop-intro">
+          <p className="engineering-loop-intro" data-reveal>
             A repeatable loop for turning an unclear problem into useful,
             tested software — then learning from what happens next.
           </p>
 
           <div className="engineering-steps">
             {engineeringSteps.map(step => (
-              <article className="engineering-step" key={step.number}>
+              <article className="engineering-step" data-reveal key={step.number}>
                 <span className="engineering-step__number">{step.number}</span>
                 <h3>{step.title}</h3>
                 <p>{step.description}</p>
@@ -162,7 +183,7 @@ export default function App() {
             ))}
           </div>
 
-          <p className="loop-footer">
+          <p className="loop-footer" data-reveal>
             <span aria-hidden="true">↻</span>
             Improve, repeat, and keep moving forward.
           </p>
