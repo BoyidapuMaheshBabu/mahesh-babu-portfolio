@@ -294,3 +294,9 @@ em{color:#2879df}
   .hero-description{color:#4d657e}
   .lab-shell .source-code{font-size:11px}
 }
+
+/* React Bits TechText wordmark stage */
+.tech-wordmark-stage{display:grid;place-items:center;align-self:center;min-width:0;z-index:1;color:#174d7d}
+.tech-wordmark-stage .tech-text{cursor:crosshair}
+.tech-wordmark-stage .tech-text-canvas{filter:drop-shadow(0 12px 18px rgba(39,129,211,.12))}
+@media(max-width:680px){.tech-wordmark-stage{transform:scale(.96);transform-origin:center}}
