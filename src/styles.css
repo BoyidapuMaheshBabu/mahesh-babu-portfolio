@@ -70,7 +70,7 @@ a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 5px; }
 /* Height drives the canvas size; 0.79 matches the original line-height
    so the wordmark occupies the same visual space as the static h1. */
 .hero-wordmark {
-  width: min(980px, 100%);
+  width: min(1120px, 100%);
   height: clamp(110px, 18vw, 220px);
   margin: 28px auto 0;
 }
