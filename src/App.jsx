@@ -1,3 +1,5 @@
+import TechText from './components/TechText.jsx';
+
 const principles = [
   { number: '01', label: 'PROBLEM', detail: 'Start with what matters.' },
   { number: '02', label: 'BUILD', detail: 'Turn ideas into software.' },
@@ -60,10 +62,29 @@ export default function App() {
           <div className="hero-index"><span /> PORTFOLIO / ENGINEERING LOG <span className="index-rule" /> 001—026</div>
           <div className="hero-content">
             <div className="hero-overline"><span className="overline-bracket">[</span> SOFTWARE <span className="overline-divider">/</span> PRODUCT <span className="overline-divider">/</span> PROBLEM SOLVING <span className="overline-bracket">]</span></div>
-            <h1 id="hero-title" className="hero-name">
-              <span>MAHESH</span>
-              <span className="name-second">BABU<span className="name-period">.</span></span>
-            </h1>
+            {/* Visually-hidden h1 preserves accessible heading + SEO */}
+            <h1 id="hero-title" className="sr-only">Mahesh Babu — AI Software Engineer</h1>
+
+            {/* Interactive TechText wordmark */}
+            <div className="hero-wordmark" aria-hidden="true">
+              <TechText
+                text="MAHESH BABU"
+                fontFamily="'Space Grotesk', sans-serif"
+                fontWeight={600}
+                fontSize={150}
+                letterSpacing={-0.05}
+                color="#f2f7ff"
+                accentColor="#66e4ee"
+                reveal="letter"
+                dashLength={4}
+                dashGap={2}
+                specks={15}
+                intro="none"
+                introDuration={2}
+                clickKick
+                guides={false}
+              />
+            </div>
             <div className="role-line"><span className="role-rule" /><p>AI SOFTWARE <strong>ENGINEER</strong></p><span className="role-rule" /></div>
             <p className="hero-description">
               I turn problems into practical software, learning the engineering behind every step.

@@ -38,4 +38,16 @@ npm run preview
 - Keep the implementation understandable and incremental.
 - Avoid importing the completed React Bits component.
 - Use the existing React/Vite stack without adding unnecessary dependencies.
-- Test the behavior as each interaction is introduced.
+
+## Attribution
+
+The `TechText` component is sourced from the [React Bits](https://reactbits.dev/) component library, which is maintained by David Haz ([@davidhaz](https://github.com/DavidHDev)).
+
+- **Source:** https://reactbits.dev/r/TechText-JS-CSS.json
+- **Repository:** https://github.com/DavidHDev/react-bits
+- **License:** MIT + Commons Clause
+
+> Free to use in personal and commercial applications.  
+> The Commons Clause restriction prohibits selling, sublicensing, or redistributing the components as a standalone component library or template package.
+
+The component source was copied verbatim from the official registry JSON (no modifications to behaviour). Only the `'use client'` directive was removed, as it is a Next.js/React Server Components convention not applicable to this Vite project.
