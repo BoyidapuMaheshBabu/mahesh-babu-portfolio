@@ -41,6 +41,7 @@ const engineeringSteps = [
 
 export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [scrollCueVisible, setScrollCueVisible] = useState(false);
 
   useEffect(() => {
     const updateScrollProgress = () => {
@@ -73,12 +74,24 @@ export default function App() {
       revealItems.forEach(item => item.classList.add('is-visible'));
     }
 
+    // Reveal the scroll cue after a short pause, unless the visitor has already moved.
+    const cueTimer = window.setTimeout(() => {
+      const currentScroll = window.scrollY || document.documentElement.scrollTop || 0;
+      if (currentScroll <= 4) setScrollCueVisible(true);
+    }, 2800);
+
+    const handleScroll = () => {
+      setScrollCueVisible(false);
+      updateScrollProgress();
+    };
+
     updateScrollProgress();
-    window.addEventListener('scroll', updateScrollProgress, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', updateScrollProgress, { passive: true });
 
     return () => {
-      window.removeEventListener('scroll', updateScrollProgress);
+      window.clearTimeout(cueTimer);
+      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', updateScrollProgress);
       revealObserver?.disconnect();
     };
@@ -149,10 +162,23 @@ export default function App() {
           </div>
         </div>
 
-        <a className="scroll-cue" href="#engineering-loop">
+        <button
+          className={`scroll-cue${scrollCueVisible ? ' is-visible' : ''}`}
+          type="button"
+          aria-controls="engineering-loop"
+          aria-label="Scroll down to explore the engineering loop"
+          aria-hidden={!scrollCueVisible}
+          tabIndex={scrollCueVisible ? 0 : -1}
+          onClick={() => {
+            setScrollCueVisible(false);
+            const target = document.getElementById('engineering-loop');
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            target?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+          }}
+        >
           <span>SCROLL TO EXPLORE</span>
           <span className="scroll-cue__arrow" aria-hidden="true">↓</span>
-        </a>
+        </button>
       </section>
 
       <section
