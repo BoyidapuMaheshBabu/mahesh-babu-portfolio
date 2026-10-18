@@ -139,3 +139,9 @@ html, body {
     letter-spacing: 0.1em;
   }
 }
+
+.additional-tag {
+  border-color: rgba(56, 189, 248, 0.2);
+  background: rgba(8, 20, 32, 0.48);
+  color: #dbeafe;
+}
