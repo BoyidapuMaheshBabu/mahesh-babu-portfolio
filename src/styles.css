@@ -184,6 +184,12 @@ html {
 
 /* ── Scroll cue at the foot of the opening screen ────────────────── */
 .hero-stage {
+  /* Pin the name screen so the next section can glide up and cover it. */
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: 100vh;
+  height: 100svh;
   min-height: 100svh;
   padding: 42px 0 64px;
 }
@@ -254,13 +260,23 @@ html {
 
 /* ── Engineering loop: the second scroll section ─────────────────── */
 .engineering-loop-section {
+  /* This layer slides over the pinned hero instead of feeling like a new page. */
   position: relative;
+  z-index: 1;
   min-height: 100svh;
   display: flex;
   align-items: center;
   padding: clamp(88px, 10vw, 140px) clamp(20px, 5vw, 76px);
-  border-top: 1px solid rgba(56, 189, 248, 0.055);
-  background: transparent;
+  border-top: 1px solid rgba(56, 189, 248, 0.045);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(5, 7, 11, 0.84) 0%,
+      rgba(5, 7, 11, 0.94) 14%,
+      rgba(5, 7, 11, 0.97) 100%
+    );
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .engineering-loop-inner {
@@ -394,6 +410,9 @@ html {
 
 @media (max-width: 640px) {
   .hero-stage {
+    height: 100vh;
+    height: 100svh;
+    min-height: 100svh;
     padding-top: 36px;
     padding-bottom: 74px;
   }
