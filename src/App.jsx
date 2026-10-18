@@ -42,7 +42,6 @@ const engineeringSteps = [
 export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollCueVisible, setScrollCueVisible] = useState(false);
-  const [transitionActive, setTransitionActive] = useState(false);
 
   useEffect(() => {
     const updateScrollProgress = () => {
@@ -59,8 +58,6 @@ export default function App() {
     const revealItems = document.querySelectorAll('[data-reveal]');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let revealObserver;
-    let transitionObserver;
-    let transitionTimer;
 
     if (reduceMotion) {
       revealItems.forEach(item => item.classList.add('is-visible'));
@@ -75,22 +72,6 @@ export default function App() {
       revealItems.forEach(item => revealObserver.observe(item));
     } else {
       revealItems.forEach(item => item.classList.add('is-visible'));
-    }
-
-    // Play one full-screen cover sweep as Slide 2 first enters view, avoiding a dead-feeling handoff.
-    const transitionTarget = document.getElementById('engineering-loop');
-    let transitionPlayed = false;
-    if (!reduceMotion && transitionTarget && 'IntersectionObserver' in window) {
-      transitionObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting || transitionPlayed) return;
-          transitionPlayed = true;
-          setTransitionActive(true);
-          transitionTimer = window.setTimeout(() => setTransitionActive(false), 1350);
-          transitionObserver?.disconnect();
-        });
-      }, { threshold: 0.08 });
-      transitionObserver.observe(transitionTarget);
     }
 
     // Reveal the scroll cue after a short pause, unless the visitor has already moved.
@@ -110,20 +91,14 @@ export default function App() {
 
     return () => {
       window.clearTimeout(cueTimer);
-      window.clearTimeout(transitionTimer);
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', updateScrollProgress);
       revealObserver?.disconnect();
-      transitionObserver?.disconnect();
     };
   }, []);
 
   return (
     <main className="portfolio-page">
-      <div
-        className={`scroll-transition${transitionActive ? ' is-active' : ''}`}
-        aria-hidden="true"
-      />
       <div
         className="scroll-progress"
         role="progressbar"
