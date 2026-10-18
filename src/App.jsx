@@ -26,9 +26,15 @@ export default function App() {
             guides={false}
           />
         </div>
-        <div className="ai-native-tag" aria-label="AI-native software engineer">
-          <span className="ai-native-tag__indicator" aria-hidden="true" />
-          <span>AI-NATIVE SOFTWARE ENGINEER</span>
+        <div className="identity-tags">
+          <div className="ai-native-tag" aria-label="AI-native software engineer">
+            <span className="ai-native-tag__indicator" aria-hidden="true" />
+            <span>AI-NATIVE SOFTWARE ENGINEER</span>
+          </div>
+          <div className="ai-native-tag product-tag" aria-label="Product builder">
+            <span className="ai-native-tag__indicator" aria-hidden="true" />
+            <span>PRODUCT BUILDER</span>
+          </div>
         </div>
       </div>
     </main>
