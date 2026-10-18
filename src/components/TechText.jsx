@@ -683,7 +683,7 @@ const TechText = ({
       glyphs.forEach((glyph, i) => {
         const target = introducing
           ? introKind === 'type' && (i === typing || (typing >= 0 && i > typing)) ? 1 : 0
-          : s.reveal === 'letter' && i === focus && i !== dragging ? 1 : 0;
+          : s.reveal === 'letter' && i === focus ? 1 : 0;
         if (introducing && glyph.shown === 0) glyph.outline = target;
         glyph.outline = approach(glyph.outline, target, dt, 0.09);
         if (Math.abs(glyph.outline - target) > 0.002) moving = true;
@@ -735,7 +735,10 @@ const TechText = ({
         ctx.globalAlpha = 1;
       });
       if (presence > 0.001) drawReveal(s);
-      drawFrame(s, accent);
+      const frameGlyph = glyphs[frame.index];
+      const frameGlyphIsDisplaced =
+        frameGlyph && Math.hypot(frameGlyph.offset.x, frameGlyph.offset.y) > 1;
+      if (!frameGlyphIsDisplaced) drawFrame(s, accent);
 
       // Render displaced glyph sprites in viewport coordinates. The overlay is
       // pointer-transparent, so pointer capture and normal page interactions remain intact.
@@ -768,6 +771,129 @@ const TechText = ({
               );
             }
           });
+
+          // Keep the complete TechText interaction attached to the moved letter:
+          // selection frame, tether, animated specks, and technical coordinate label.
+          const activeGlyph = glyphs[frame.index];
+          if (
+            activeGlyph &&
+            Math.hypot(activeGlyph.offset.x, activeGlyph.offset.y) > 1 &&
+            frame.alpha > 0.01
+          ) {
+            floatingCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            floatingCtx.globalAlpha = 1;
+            floatingCtx.lineWidth = 1;
+            floatingCtx.strokeStyle = accent;
+            floatingCtx.fillStyle = accent;
+
+            const x1 = rect.left + crisp(frame.x1);
+            const y1 = rect.top + crisp(frame.y1);
+            const x2 = rect.left + crisp(frame.x2);
+            const y2 = rect.top + crisp(frame.y2);
+            const frameWidth = x2 - x1;
+            const frameHeight = y2 - y1;
+            const perimeter = 2 * (frameWidth + frameHeight);
+            const originX = rect.left + (activeGlyph.box.x1 + activeGlyph.box.x2) / 2;
+            const originY = rect.top + (activeGlyph.box.y1 + activeGlyph.box.y2) / 2;
+            const movedX = originX + activeGlyph.offset.x;
+            const movedY = originY + activeGlyph.offset.y;
+
+            // Connection line from the letter's resting position to its new one.
+            floatingCtx.beginPath();
+            floatingCtx.moveTo(originX, originY);
+            floatingCtx.lineTo(movedX, movedY);
+            floatingCtx.setLineDash([3, 4]);
+            floatingCtx.globalAlpha = 0.45 * frame.alpha;
+            floatingCtx.stroke();
+            floatingCtx.setLineDash([]);
+            floatingCtx.beginPath();
+            floatingCtx.rect(Math.round(originX) - 2, Math.round(originY) - 2, 4, 4);
+            floatingCtx.globalAlpha = 0.7 * frame.alpha;
+            floatingCtx.fill();
+
+            // Technical selection frame and corner handles.
+            floatingCtx.beginPath();
+            floatingCtx.rect(x1, y1, frameWidth, frameHeight);
+            floatingCtx.globalAlpha = 0.5 * frame.alpha;
+            floatingCtx.stroke();
+            floatingCtx.beginPath();
+            for (const [cx, cy] of [[x1, y1], [x2, y1], [x2, y2], [x1, y2]]) {
+              floatingCtx.rect(Math.round(cx) - 2, Math.round(cy) - 2, 5, 5);
+            }
+            floatingCtx.globalAlpha = 0.95 * frame.alpha;
+            floatingCtx.fill();
+
+            // Animate the same small perimeter particles used by TechText.
+            if (s.specks > 0 && perimeter > 2) {
+              const seed = frame.index + 1;
+              const grid = 3;
+              for (let k = 0; k < s.specks; k++) {
+                const period = 0.5 + noise(seed, k, 11) * 1.2;
+                const t = pulse / period + noise(seed, k, 17);
+                const cycle = Math.floor(t);
+                const life = t - cycle;
+                if (life > 0.7) continue;
+
+                let d = noise(seed, k, cycle) * perimeter;
+                let px, py, nx, ny;
+                if (d < frameWidth) {
+                  px = x1 + d; py = y1; nx = 0; ny = -1;
+                } else if ((d -= frameWidth) < frameHeight) {
+                  px = x2; py = y1 + d; nx = 1; ny = 0;
+                } else if ((d -= frameHeight) < frameWidth) {
+                  px = x2 - d; py = y2; nx = 0; ny = 1;
+                } else {
+                  d -= frameWidth; px = x1; py = y2 - d; nx = -1; ny = 0;
+                }
+
+                const pick = noise(seed, k, cycle, 2);
+                const size = pick < 0.46 ? 2 : pick < 0.7 ? 3 : pick < 0.84 ? 5 : pick < 0.94 ? 8 : 11;
+                const large = size >= 8;
+                const out = (large ? 9 : 4) + Math.floor(noise(seed, k, cycle, 1) * 5) * grid;
+                const sx = x1 + Math.round((px + nx * out - x1) / grid) * grid;
+                const sy = y1 + Math.round((py + ny * out - y1) / grid) * grid;
+                const tone = noise(seed, k, cycle, 3);
+                const blink = life < 0.06 || (life > 0.32 && life < 0.36) ? 0.35 : 1;
+                const alpha = frame.alpha * (large ? 0.3 + 0.4 * tone : 0.3 + 0.6 * tone) * blink;
+
+                floatingCtx.globalAlpha = alpha;
+                if (tone < 0.26 || (large && tone < 0.78)) {
+                  floatingCtx.strokeRect(Math.round(sx - size / 2) + 0.5, Math.round(sy - size / 2) + 0.5, size, size);
+                  if (large && tone > 0.5) floatingCtx.fillRect(Math.round(sx) - 1, Math.round(sy) - 1, 2, 2);
+                } else {
+                  floatingCtx.fillRect(Math.round(sx - size / 2), Math.round(sy - size / 2), size, size);
+                }
+              }
+              for (let j = 0; j < 2; j++) {
+                const head = (pulse * 0.42 * s.speed + j * 0.5) * perimeter;
+                for (let i = 0; i < 4; i++) {
+                  let d = ((head - i * 6) % perimeter + perimeter) % perimeter;
+                  let px, py;
+                  if (d < frameWidth) { px = x1 + d; py = y1; }
+                  else if ((d -= frameWidth) < frameHeight) { px = x2; py = y1 + d; }
+                  else if ((d -= frameHeight) < frameWidth) { px = x2 - d; py = y2; }
+                  else { d -= frameWidth; px = x1; py = y2 - d; }
+                  const size = i === 0 ? 3 : 2;
+                  floatingCtx.globalAlpha = frame.alpha * [0.95, 0.55, 0.32, 0.16][i];
+                  floatingCtx.fillRect(Math.round(px - size / 2), Math.round(py - size / 2), size, size);
+                }
+              }
+            }
+
+            if (s.labels) {
+              floatingCtx.font = LABEL_FONT;
+              floatingCtx.textAlign = 'left';
+              floatingCtx.textBaseline = 'bottom';
+              floatingCtx.fillStyle = accent;
+              floatingCtx.globalAlpha = 0.62 * frame.alpha;
+              floatingCtx.fillText(
+                `${signed(Math.round(activeGlyph.offset.x))}, ${signed(Math.round(-activeGlyph.offset.y))}`,
+                Math.round(x1),
+                Math.round(y1) - 7
+              );
+            }
+            floatingCtx.globalAlpha = 1;
+          }
         }
         floatingCtx.globalAlpha = 1;
       }
