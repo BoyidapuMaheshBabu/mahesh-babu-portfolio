@@ -245,7 +245,7 @@ const TechText = ({
           ...base,
           offset: kept?.char === char ? kept.offset : { x: 0, y: 0 },
           velocity: { x: 0, y: 0 },
-          outline: 0, shown: 1, cells: null, assembled: 0, index: i,
+          outline: 0, shown: 1, introY: 0, cells: null, assembled: 0, index: i,
           fill: sprite(s, next, base, false, ink),
           dashes: sprite(s, next, base, true, ink),
         });
@@ -660,9 +660,21 @@ const TechText = ({
         typing = progress < 0.93 ? cursorAt : -1;
         glyphs.forEach((glyph, i) => {
           glyph.shown = i < cursorAt ? 1 : i === cursorAt ? smoothstep(0, step * 0.3, progress - i * step) : 0;
+          glyph.introY = 0;
+        });
+      } else if (introducing && introKind === 'split') {
+        // Alternate entrances: even letters rise from below; odd letters drop from above.
+        // The small stagger gives the wordmark a deliberate, left-to-right rhythm.
+        glyphs.forEach((glyph, i) => {
+          const start = glyphs.length > 1 ? (i / (glyphs.length - 1)) * 0.28 : 0;
+          const local = clamp01((progress - start) / 0.64);
+          const eased = 1 - Math.pow(1 - local, 3);
+          const direction = i % 2 === 0 ? 1 : -1;
+          glyph.shown = eased;
+          glyph.introY = direction * height * 0.62 * (1 - eased);
         });
       } else {
-        glyphs.forEach(glyph => { glyph.shown = 1; });
+        glyphs.forEach(glyph => { glyph.shown = 1; glyph.introY = 0; });
       }
       const focus = introducing ? typing : dragging >= 0 ? dragging : active ? glyphAt(lens.x, lens.y) : -1;
       if (focus >= 0 && s.selection) {
@@ -724,13 +736,14 @@ const TechText = ({
         if (glyph.shown < 0.001) return;
         // Moved letters are drawn on the viewport canvas so the local canvas cannot clip them.
         if (Math.hypot(glyph.offset.x, glyph.offset.y) > 1) return;
+        const introY = introducing && introKind === 'split' ? glyph.introY : 0;
         if (glyph.outline < 0.999) {
           ctx.globalAlpha = (1 - glyph.outline) * glyph.shown;
-          blit(ctx, glyph.fill, glyph.offset.x, glyph.offset.y, 0, 0);
+          blit(ctx, glyph.fill, glyph.offset.x, glyph.offset.y + introY, 0, 0);
         }
         if (glyph.outline > 0.001) {
           ctx.globalAlpha = glyph.outline * glyph.shown;
-          blit(ctx, glyph.dashes, glyph.offset.x, glyph.offset.y, 0, 0);
+          blit(ctx, glyph.dashes, glyph.offset.x, glyph.offset.y + introY, 0, 0);
         }
         ctx.globalAlpha = 1;
       });
