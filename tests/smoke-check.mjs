@@ -29,7 +29,7 @@ assert.match(viteConfig, /@vitejs\/plugin-react/, 'Vite must configure the React
 assert.equal(packageJson.scripts.test, 'node tests/smoke-check.mjs', 'npm test must run this smoke check');
 assert.equal(packageJson.dependencies.react, packageJson.dependencies['react-dom'], 'React and React DOM versions must match');
 assert.match(app, /import TechText from '\.\/components\/TechText\.jsx'/, 'The portfolio hero must import TechText');
-assert.match(app, /<TechText[\\s\\S]*?text="MAHESH BABU"[\\s\\S]*?fontSize=\\{150\\}/, 'The hero must render the animated name wordmark');
+assert.ok(app.includes('<TechText') && app.includes('text="MAHESH BABU"') && app.includes('fontSize={150}'), 'The hero must render the animated name wordmark');
 assert.match(techText, /getContext\('2d'\)/, 'TechText must render using its canvas implementation');
 assert.match(techTextCss, /\.tech-text-canvas/, 'TechText must include its canvas styles');
 assert.match(css, /\.tech-wordmark-stage/, 'The portfolio must style the TechText hero stage');
