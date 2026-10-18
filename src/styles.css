@@ -24,9 +24,17 @@ html {
 }
 
 .portfolio-page {
+  position: relative;
+  isolation: isolate;
   width: 100%;
   min-height: 100vh;
   overflow: clip;
+  /* One shared canvas keeps the hero and every section visually connected. */
+  background:
+    radial-gradient(ellipse at 50% 8%, rgba(8, 47, 73, 0.28) 0%, transparent 43%),
+    radial-gradient(ellipse at 15% 12%, rgba(14, 116, 144, 0.09) 0%, transparent 34%),
+    radial-gradient(ellipse at 82% 72%, rgba(8, 47, 73, 0.16) 0%, transparent 42%),
+    #05070b;
 }
 
 /* A slim progress track stays pinned to the top while the page scrolls. */
@@ -71,10 +79,7 @@ html {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse at 50% 48%, rgba(8, 47, 73, 0.24) 0%, rgba(5, 7, 11, 0) 55%),
-    radial-gradient(ellipse at 15% 15%, rgba(14, 116, 144, 0.08) 0%, transparent 38%),
-    #05070b;
+  background: transparent;
 }
 
 /* ── Wordmark canvas container ──────────────────────────────────── */
@@ -254,10 +259,8 @@ html {
   display: flex;
   align-items: center;
   padding: clamp(88px, 10vw, 140px) clamp(20px, 5vw, 76px);
-  border-top: 1px solid rgba(56, 189, 248, 0.12);
-  background:
-    radial-gradient(ellipse at 50% 10%, rgba(8, 47, 73, 0.25) 0%, transparent 50%),
-    linear-gradient(180deg, #060a11 0%, #05070b 100%);
+  border-top: 1px solid rgba(56, 189, 248, 0.055);
+  background: transparent;
 }
 
 .engineering-loop-inner {
