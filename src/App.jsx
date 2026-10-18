@@ -35,6 +35,22 @@ export default function App() {
             <span className="ai-native-tag__indicator" aria-hidden="true" />
             <span>PRODUCT BUILDER</span>
           </div>
+          <div className="ai-native-tag additional-tag" aria-label="Problem solver">
+            <span className="ai-native-tag__indicator" aria-hidden="true" />
+            <span>PROBLEM SOLVER</span>
+          </div>
+          <div className="ai-native-tag additional-tag" aria-label="Logical thinker">
+            <span className="ai-native-tag__indicator" aria-hidden="true" />
+            <span>LOGICAL THINKER</span>
+          </div>
+          <div className="ai-native-tag additional-tag" aria-label="Client-side thinker">
+            <span className="ai-native-tag__indicator" aria-hidden="true" />
+            <span>CLIENT-SIDE THINKER</span>
+          </div>
+          <div className="ai-native-tag additional-tag" aria-label="Adaptive problem solver">
+            <span className="ai-native-tag__indicator" aria-hidden="true" />
+            <span>ADAPTIVE PROBLEM SOLVER</span>
+          </div>
         </div>
       </div>
     </main>
