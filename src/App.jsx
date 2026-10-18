@@ -10,8 +10,8 @@ export default function App() {
       <div className="wordmark" aria-hidden="true">
         <TechText
           text="MAHESH BABU"
-          fontFamily="'Space Grotesk', sans-serif"
-          fontWeight={600}
+          fontFamily="'Sora', sans-serif"
+          fontWeight={700}
           fontSize={260}
           letterSpacing={-0.05}
           color="#f8fafc"
@@ -20,8 +20,8 @@ export default function App() {
           dashLength={4}
           dashGap={2}
           specks={15}
-          intro="none"
-          introDuration={2}
+          intro="split"
+          introDuration={1.65}
           clickKick
           guides={false}
         />
