@@ -70,3 +70,43 @@ html, body {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* ── Compact AI-native identity tag ─────────────────────────────── */
+.identity-lockup {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2px, 1vw, 10px);
+}
+
+.ai-native-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid rgba(56, 189, 248, 0.34);
+  border-radius: 999px;
+  background: rgba(8, 47, 73, 0.2);
+  color: #a5e4ff;
+  font-family: 'Oxanium', sans-serif;
+  font-size: clamp(10px, 0.8vw, 12px);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ai-native-tag__indicator {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+}
