@@ -10,8 +10,8 @@ export default function App() {
       <div className="wordmark" aria-hidden="true">
         <TechText
           text="MAHESH BABU"
-          fontFamily="'Sora', sans-serif"
-          fontWeight={700}
+          fontFamily="'Outfit', sans-serif"
+          fontWeight={800}
           fontSize={260}
           letterSpacing={-0.05}
           color="#f8fafc"
