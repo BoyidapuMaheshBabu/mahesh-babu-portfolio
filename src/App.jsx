@@ -14,8 +14,8 @@ export default function App() {
           fontWeight={600}
           fontSize={150}
           letterSpacing={-0.05}
-          color="#0a0a0a"
-          accentColor="#0284c7"
+          color="#f8fafc"
+          accentColor="#38bdf8"
           reveal="letter"
           dashLength={4}
           dashGap={2}
