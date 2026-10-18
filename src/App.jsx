@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import TechText from './components/TechText.jsx';
 import { ArrowDownRight, ArrowUpRight, ExternalLink, Code2, Sparkles, Menu, X, GitFork, Star, RefreshCw, Folder, FileCode2, ChevronRight, Terminal, Smartphone, BrainCircuit, CircleDot } from 'lucide-react';
 
 function GitHubMark({ size = 18 }) {
@@ -245,23 +246,37 @@ export default function App() {
     <main id="home">
       <section className="hero section-wrap">
         <div className="hero-copy" data-reveal>
-          <div className="eyebrow"><span className="live-dot"/> ASPIRING SOFTWARE ENGINEER <span className="eyebrow-rule"/> BUILDING IN PUBLIC</div>
+          <div className="eyebrow"><span className="live-dot"/> AI SOFTWARE ENGINEER <span className="eyebrow-rule"/> BUILDING IN PUBLIC</div>
           <h1>I build to<br/>understand<span className="accent">.</span><br/><em>Then build better.</em></h1>
           <p className="hero-description">I'm <strong>Mahesh Babu</strong> — a Diploma Computer Science student learning software engineering by taking ideas from problem to prototype, testing what I build, and improving what I learn.</p>
           <div className="hero-actions"><a className="button primary" href="#work">Explore my work <ArrowDownRight size={17}/></a><a className="button secondary" href="https://github.com/BoyidapuMaheshBabu" target="_blank" rel="noreferrer"><GitHubMark size={16}/> View GitHub <ArrowUpRight size={15}/></a></div>
           <div className="hero-note"><Sparkles size={14}/> Curious by default. Honest about the process.</div>
         </div>
         <div className="hero-visual" data-reveal>
-          <div className="visual-orbit orbit-a"/><div className="visual-orbit orbit-b"/><div className="visual-label label-top"><span className="live-dot"/> CURRENT FOCUS / 01</div>
-          <div className="focus-card">
-            <div className="focus-card-top"><span><i/> <i/> <i/></span><span>TERMRUNWAY / ANDROID</span><span className="focus-version">V1</span></div>
-            <div className="focus-inner"><div className="micro-label">PRODUCT ENGINEERING · LEARNING BY BUILDING</div><h2>Money, with<br/><em>a plan.</em></h2><p>One genuine expense. Two useful views.</p>
-              <div className="mock-dashboard"><div className="mock-head"><span>SEMESTER OVERVIEW</span><span className="mock-chip">LOCAL-FIRST</span></div><div className="mock-amount">₹ 8,450<span>.00</span></div><div className="mock-chart">{[30,48,35,66,44,82,58,73,46,91,65,76,54,86,63,100,71,83,58,94].map((n,i)=><i key={i} style={{'--h':n+'%'}}/>)}</div><div className="mock-foot"><span><b/> Illustrative interface</span><span>Concept preview</span></div></div>
-              <div className="focus-detail"><span className="detail-icon"><Code2 size={16}/></span><span><b>Build with intention</b><small>Understand the problem first</small></span><ArrowUpRight size={15}/></div>
-            </div><div className="focus-card-bottom"><span><i/> PRODUCT THINKING</span><span>01 / 03</span></div>
+          <div className="visual-orbit orbit-a"/><div className="visual-orbit orbit-b"/><div className="visual-label label-top"><span className="live-dot"/> INTERACTIVE WORDMARK / 01</div>
+          <div
+            className="tech-wordmark-stage"
+            style={{ width: '100%', height: '480px', position: 'relative' }}
+            role="img"
+            aria-label="Mahesh Babu, AI software engineer. Interactive animated wordmark."
+          >
+            <TechText
+              text="MAHESH BABU"
+              fontWeight={600}
+              fontSize={150}
+              reveal="letter"
+              dashLength={4}
+              dashGap={2}
+              specks={15}
+              intro="none"
+              introDuration={2}
+              clickKick
+              guides={false}
+              color="#174d7d"
+              accentColor="#2b8fe4"
+            />
           </div>
           <div className="visual-label label-bottom">THINK <b>→</b> BUILD <b>→</b> VERIFY</div>
-          <div className="floating-chip chip-one"><span>✳</span> Small steps, real progress</div><div className="floating-chip chip-two"><Code2 size={14}/> Code is a tool</div>
         </div>
       </section>
       <div className="ticker" aria-label="Areas of focus"><div className="ticker-track">{Array.from({length:2},(_,i)=><span key={i}>PRODUCT THINKING <b>✳</b> SOFTWARE ENGINEERING <b>✳</b> PROBLEM SOLVING <b>✳</b> BUILD · TEST · IMPROVE <b>✳</b> LEARN IN PUBLIC <b>✳</b></span>)}</div></div>
