@@ -756,3 +756,30 @@ html {
     transform: translateZ(0);
   }
 }
+
+
+/* ── Opening wordmark: reduced-motion behavior ──────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .wordmark-arrival {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .wordmark-arrival.is-handoff {
+    opacity: 0;
+  }
+
+  .wordmark > .wordmark-tech-layer {
+    opacity: 1;
+    transition: none !important;
+  }
+
+  .identity-tags {
+    opacity: 1;
+    transform: none;
+    transition: none !important;
+  }
+}
