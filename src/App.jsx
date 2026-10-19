@@ -98,7 +98,10 @@ export default function App() {
   }, []);
 
   return (
-    <main className="portfolio-page">
+    <main className="portfolio-page aura-bg">
+      <div className="aura-layer-1" aria-hidden="true" />
+      <div className="aura-layer-2" aria-hidden="true" />
+      <div className="portfolio-content">
       <div
         className="scroll-progress"
         role="progressbar"
@@ -123,8 +126,8 @@ export default function App() {
               fontWeight={600}
               fontSize={260}
               letterSpacing={-0.05}
-              color="#f8fafc"
-              accentColor="#38bdf8"
+              color="#0f172a"
+              accentColor="#2563eb"
               reveal="letter"
               dashLength={4}
               dashGap={2}
@@ -215,6 +218,7 @@ export default function App() {
           </p>
         </div>
       </section>
+      </div>
     </main>
   );
 }
