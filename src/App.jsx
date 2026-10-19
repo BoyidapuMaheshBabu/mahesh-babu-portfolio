@@ -144,17 +144,6 @@ export default function App() {
           end: 'top top',
           scrub: 0.2,
           invalidateOnRefresh: true,
-          onUpdate: (self) => updateProgress(self.progress),
-          onEnter: clearScrollCue,
-          onEnterBack: clearScrollCue,
-          onLeaveBack: () => {
-            updateProgress(0);
-            scheduleScrollCue(700);
-          },
-          onLeave: () => {
-            updateProgress(1);
-            clearScrollCue();
-          },
         },
       }).to(coverRevealTargets, {
         autoAlpha: 1,
