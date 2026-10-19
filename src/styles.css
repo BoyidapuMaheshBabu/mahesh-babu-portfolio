@@ -27,7 +27,7 @@ html {
   position: relative;
   width: 100%;
   min-height: 100vh;
-  overflow: clip;
+  overflow: visible;
   background: transparent;
 }
 
@@ -40,8 +40,10 @@ html {
 
 .aura-layer-1,
 .aura-layer-2 {
-  position: absolute;
+  position: fixed;
   inset: 0;
+  height: 100vh;
+  height: 100svh;
   z-index: 0;
   mix-blend-mode: multiply;
   filter: blur(90px);
@@ -335,9 +337,9 @@ html {
 
 /* ── Scroll cue at the foot of the opening screen ────────────────── */
 .hero-stage {
-  /* Pin the name screen so the next section can glide up and cover it. */
-  position: sticky;
-  top: 0;
+  /* ScrollTrigger pins this section during the incoming cover. */
+  position: relative;
+  top: auto;
   z-index: 0;
   height: 100vh;
   height: 100svh;
@@ -683,35 +685,14 @@ html {
 /* ── Arctic Frost refinement: quiet motion, technical texture, soft glass ── */
 
 /* A slow drift gives the aura life without competing with the wordmark. */
-.aura-layer-1 {
-  animation: arctic-aura-drift-one 46s ease-in-out infinite alternate;
-}
-
+/* Keep the ambient aura static so it does not compete with scroll motion. */
+.aura-layer-1,
 .aura-layer-2 {
-  animation: arctic-aura-drift-two 58s ease-in-out infinite alternate;
-}
-
-@keyframes arctic-aura-drift-one {
-  0% {
-    transform: translate3d(-0.8%, -0.35%, 0) scale(1.035);
-  }
-  100% {
-    transform: translate3d(0.9%, 0.65%, 0) scale(1.065);
-  }
-}
-
-@keyframes arctic-aura-drift-two {
-  0% {
-    transform: translate3d(0.65%, 0.4%, 0) scale(1.055);
-  }
-  100% {
-    transform: translate3d(-0.75%, -0.55%, 0) scale(1.025);
-  }
+  animation: none;
 }
 
 /* Cards read as cool, translucent glass rather than opaque dark panels. */
-.ai-native-tag,
-.engineering-step {
+.ai-native-tag {
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
@@ -739,14 +720,12 @@ html {
 /* The next section glides over the pinned hero on a frosted, translucent sheet.
    The aura remains continuous behind both sections instead of restarting. */
 .engineering-loop-section {
-  background: linear-gradient(
-    180deg,
-    rgba(250, 248, 242, 0.62) 0%,
-    rgba(250, 248, 242, 0.86) 18%,
-    rgba(250, 248, 242, 0.78) 100%
-  );
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
+  /* Opaque foreground layer: the hero is covered, never faded out. */
+  background:
+    radial-gradient(70% 48% at 82% 18%, rgba(147, 197, 253, 0.22), transparent 72%),
+    linear-gradient(180deg, #faf8f2 0%, #f8f9fc 100%);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -785,87 +764,101 @@ html {
 }
 
 
-/* ── Full-screen section transition system ───────────────────────── */
+/* ── Pinned cover transition — clean scroll layout ────────────────── */
 html,
-body,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 #root {
-  height: 100%;
+  width: 100%;
   min-height: 100%;
-  overflow: hidden;
+  height: auto;
+  overflow: visible;
 }
 
 .portfolio-page.aura-bg {
-  height: 100vh;
-  height: 100svh;
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
   min-height: 100svh;
-  max-height: 100svh;
-  overflow: hidden;
+  max-height: none;
+  overflow: visible;
 }
 
 .portfolio-content {
   position: relative;
   z-index: 1;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+  height: auto;
+  min-height: 100svh;
+  overflow: visible;
 }
 
-.site-section {
-  position: absolute;
-  inset: 0;
+.hero-stage {
+  z-index: 0;
   width: 100%;
-  height: 100%;
-  min-height: 0;
-  max-height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(37, 99, 235, 0.28) transparent;
-  visibility: hidden;
-  will-change: transform;
-  backface-visibility: hidden;
+  height: 100vh;
+  height: 100svh;
+  min-height: 100svh;
 }
 
-.site-section[aria-hidden="true"] {
-  pointer-events: none;
-  user-select: none;
+.engineering-loop-section {
+  position: relative;
+  z-index: 2;
+  min-height: 100svh;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  isolation: isolate;
 }
 
-.site-section [data-reveal] {
-  transition: none;
-  will-change: opacity, transform, filter;
-}
-
-.engineering-step[data-reveal]:not(.is-entrance-animating) {
-  transition:
-    border-color 180ms ease,
-    background 180ms ease,
-    transform 180ms ease,
-    box-shadow 180ms ease;
-}
-
-.engineering-step[data-reveal].is-entrance-animating {
+/* GSAP owns reveal transforms and opacity. CSS transitions must not compete. */
+.engineering-loop-section [data-reveal] {
+  opacity: 1;
+  transform: none;
   transition: none !important;
+  will-change: opacity, transform;
 }
 
+.engineering-loop-section .engineering-step {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.engineering-loop-section .engineering-step:hover {
+  transform: translateY(-3px);
+}
+
+/* The progress indicator follows cover progress via a transform, not width animation. */
 .scroll-progress {
-  position: absolute;
+  position: fixed;
   inset: 0 0 auto;
 }
 
 .scroll-progress > span {
-  transition: width 850ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: none;
+  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .site-section {
-    scroll-behavior: auto;
+  .aura-layer-1,
+  .aura-layer-2 {
+    animation: none !important;
+    transform: none;
   }
 
-  .site-section [data-reveal],
-  .engineering-step[data-reveal] {
+  .engineering-loop-section [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none !important;
+  }
+
+  .scroll-progress > span {
     transition: none !important;
   }
 }
