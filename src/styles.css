@@ -54,20 +54,20 @@ html {
 .aura-layer-1 {
   background: linear-gradient(
     rgba(0, 0, 0, 0) 0%,
-    rgba(200, 230, 255, 0.12) 28%,
+    rgba(147, 197, 253, 0.24) 28%,
     rgb(255, 255, 255) 18%,
-    rgb(150, 200, 255) 68%,
-    rgb(100, 130, 200) 100%
+    rgb(112, 175, 255) 68%,
+    rgb(60, 105, 225) 100%
   );
 }
 
 .aura-layer-2 {
   background: linear-gradient(
     rgba(0, 0, 0, 0) 0%,
-    rgba(200, 230, 255, 0.22) 34%,
+    rgba(147, 197, 253, 0.32) 34%,
     rgb(255, 255, 255) 66%,
-    rgb(150, 200, 255) 82%,
-    rgb(100, 130, 200) 100%
+    rgb(112, 175, 255) 82%,
+    rgb(60, 105, 225) 100%
   );
 }
 
@@ -602,31 +602,6 @@ html {
   100% {
     transform: translate3d(-0.75%, -0.55%, 0) scale(1.025);
   }
-}
-
-/* A fine engineering grid fades away before it becomes visual noise. */
-.aura-grid {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.44;
-  background-image:
-    linear-gradient(rgba(37, 99, 235, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37, 99, 235, 0.055) 1px, transparent 1px);
-  background-size: 72px 72px;
-  -webkit-mask-image: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.9) 0%,
-    rgba(0, 0, 0, 0.48) 45%,
-    transparent 84%
-  );
-  mask-image: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.9) 0%,
-    rgba(0, 0, 0, 0.48) 45%,
-    transparent 84%
-  );
 }
 
 /* Cards read as cool, translucent glass rather than opaque dark panels. */
