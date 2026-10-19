@@ -385,6 +385,13 @@ export default function App() {
       const target = event.target instanceof Element ? event.target : null;
       if (target?.closest('input, textarea, select, button, a, [role="button"], [contenteditable="true"]')) return;
 
+      if (isTransitioningRef.current) {
+        if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'].includes(event.key)) {
+          event.preventDefault();
+        }
+        return;
+      }
+
       let direction = 0;
       let targetIndex = activeSectionRef.current;
 
