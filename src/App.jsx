@@ -101,7 +101,6 @@ export default function App() {
     <main className="portfolio-page aura-bg">
       <div className="aura-layer-1" aria-hidden="true" />
       <div className="aura-layer-2" aria-hidden="true" />
-      <div className="aura-grid" aria-hidden="true" />
       <div className="portfolio-content">
       <div
         className="scroll-progress"
