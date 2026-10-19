@@ -193,9 +193,7 @@ export default function App() {
       });
     } else {
       gsap.set(revealTargets, { autoAlpha: 1, y: 0, clearProps: 'filter' });
-    }
 
-    } else {
       // Reduced-motion fallback: ordinary page scrolling, visible content, and
       // lightweight progress/cue updates without pinning or animated reveals.
       ScrollTrigger.create({
