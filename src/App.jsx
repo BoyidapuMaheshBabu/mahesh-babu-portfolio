@@ -55,8 +55,8 @@ export default function App() {
     }
 
     const prepareTechText = window.setTimeout(() => setIntroPhase('arming'), 900);
-    const activateTechText = window.setTimeout(() => setIntroPhase('tech'), 1000);
-    const revealIdentityTags = window.setTimeout(() => setIdentityTagsVisible(true), 2100);
+    const activateTechText = window.setTimeout(() => setIntroPhase('tech'), 1100);
+    const revealIdentityTags = window.setTimeout(() => setIdentityTagsVisible(true), 2200);
 
     return () => {
       window.clearTimeout(prepareTechText);
@@ -145,24 +145,26 @@ export default function App() {
             <span className={`wordmark-arrival${introPhase === 'tech' ? ' is-handoff' : ''}`}>
               MAHESH BABU
             </span>
-            <TechText
-              text="MAHESH BABU"
-              className="wordmark-tech-layer"
-              fontFamily="'Oxanium', sans-serif"
-              fontWeight={600}
-              fontSize={260}
-              letterSpacing={-0.05}
-              color="#0f172a"
-              accentColor="#2563eb"
-              reveal="letter"
-              dashLength={4}
-              dashGap={2}
-              specks={15}
-              intro={introPhase === 'arrival' ? 'none' : 'assemble'}
-              introDuration={0.95}
-              clickKick
-              guides={false}
-            />
+            {introPhase !== 'arrival' && (
+              <TechText
+                text="MAHESH BABU"
+                className="wordmark-tech-layer"
+                fontFamily="'Oxanium', sans-serif"
+                fontWeight={600}
+                fontSize={260}
+                letterSpacing={-0.05}
+                color="#0f172a"
+                accentColor="#2563eb"
+                reveal="letter"
+                dashLength={4}
+                dashGap={2}
+                specks={15}
+                intro="assemble"
+                introDuration={0.95}
+                clickKick
+                guides={false}
+              />
+            )}
           </div>
           <div className="identity-tags">
             <div className="ai-native-tag" aria-label="AI-native software engineer">
