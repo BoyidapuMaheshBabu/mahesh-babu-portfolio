@@ -50,6 +50,7 @@ export default function App() {
   const navigationRef = useRef(null);
 
   const [activeSection, setActiveSection] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollCueVisible, setScrollCueVisible] = useState(false);
   const { contextSafe } = useGSAP({ scope: pageRef });
@@ -169,6 +170,7 @@ export default function App() {
       if (!outgoing || !incoming) return;
 
       isTransitioningRef.current = true;
+      setIsTransitioning(true);
       window.clearTimeout(cueTimer);
       setScrollCueVisible(false);
 
@@ -222,6 +224,7 @@ export default function App() {
 
         contentTargets.forEach((element) => element.classList.remove('is-entrance-animating'));
         isTransitioningRef.current = false;
+        setIsTransitioning(false);
         transitionTimeline = null;
 
         if (targetIndex === 0) scheduleScrollCue(1350);
@@ -443,7 +446,7 @@ export default function App() {
         <span style={{ width: `${scrollProgress}%` }} />
       </div>
 
-      <section className="site-section stage hero-stage" data-fullpage-section="true" data-section-index="0" aria-hidden={activeSection !== 0} inert={activeSection !== 0} aria-labelledby="portfolio-name">
+      <section className="site-section stage hero-stage" data-fullpage-section="true" data-section-index="0" aria-hidden={isTransitioning || activeSection !== 0} inert={isTransitioning || activeSection !== 0} aria-labelledby="portfolio-name">
         <h1 id="portfolio-name" className="sr-only">
           Mahesh Babu — AI-Native Software Engineer and Product Builder
         </h1>
@@ -524,8 +527,8 @@ export default function App() {
         data-fullpage-section="true"
         data-section-index="1"
         id="engineering-loop"
-        aria-hidden={activeSection !== 1}
-        inert={activeSection !== 1}
+        aria-hidden={isTransitioning || activeSection !== 1}
+        inert={isTransitioning || activeSection !== 1}
         aria-labelledby="engineering-loop-title"
       >
         <div className="engineering-loop-inner">
