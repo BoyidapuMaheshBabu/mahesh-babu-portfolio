@@ -127,7 +127,7 @@ export default function App() {
       ScrollTrigger.create({
         trigger: heroSection,
         start: 'top top',
-        end: () => '+=' + window.innerHeight,
+        end: () => '+=' + Math.max(1, heroSection.offsetHeight),
         pin: true,
         pinSpacing: false,
         anticipatePin: 1,
@@ -144,6 +144,17 @@ export default function App() {
           end: 'top top',
           scrub: 0.2,
           invalidateOnRefresh: true,
+          onUpdate: (self) => updateProgress(self.progress),
+          onEnter: clearScrollCue,
+          onEnterBack: clearScrollCue,
+          onLeaveBack: () => {
+            updateProgress(0);
+            scheduleScrollCue(700);
+          },
+          onLeave: () => {
+            updateProgress(1);
+            clearScrollCue();
+          },
         },
       }).to(coverRevealTargets, {
         autoAlpha: 1,
@@ -184,26 +195,32 @@ export default function App() {
       gsap.set(revealTargets, { autoAlpha: 1, y: 0, clearProps: 'filter' });
     }
 
-    // Separate observer trigger keeps the progress bar and scroll cue accurate
-    // even when reduced motion disables the pin and reveal timelines.
-    ScrollTrigger.create({
-      trigger: incomingSection,
-      start: 'top bottom',
-      end: 'top top',
-      invalidateOnRefresh: true,
-      onUpdate: (self) => updateProgress(self.progress),
-      onEnter: clearScrollCue,
-      onEnterBack: clearScrollCue,
-      onLeaveBack: () => {
-        updateProgress(0);
-        scheduleScrollCue(700);
-      },
-      onLeave: () => updateProgress(1),
-    });
+    } else {
+      // Reduced-motion fallback: ordinary page scrolling, visible content, and
+      // lightweight progress/cue updates without pinning or animated reveals.
+      ScrollTrigger.create({
+        trigger: incomingSection,
+        start: 'top bottom',
+        end: 'top top',
+        invalidateOnRefresh: true,
+        onUpdate: (self) => updateProgress(self.progress),
+        onEnter: clearScrollCue,
+        onEnterBack: clearScrollCue,
+        onLeaveBack: () => {
+          updateProgress(0);
+          scheduleScrollCue(700);
+        },
+        onLeave: () => {
+          updateProgress(1);
+          clearScrollCue();
+        },
+      });
+    }
 
     updateProgress(0);
-    scheduleScrollCue(2700);
     ScrollTrigger.refresh();
+    // Schedule after refresh so an initial onEnter callback cannot cancel this timer.
+    scheduleScrollCue(2700);
 
     return () => {
       window.clearTimeout(cueTimerRef.current);
