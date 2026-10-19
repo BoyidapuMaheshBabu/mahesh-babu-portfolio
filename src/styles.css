@@ -652,8 +652,7 @@ html {
 
 /* ── Arctic Frost refinement: quiet motion, technical texture, soft glass ── */
 
-/* A slow drift gives the aura life without competing with the wordmark. */
-/* Keep the ambient aura static so it does not compete with scroll motion. */
+/* Keep the ambient aura static and viewport-bound for the pinned transition. */
 .aura-layer-1,
 .aura-layer-2 {
   animation: none;
@@ -685,8 +684,7 @@ html {
   box-shadow: 0 14px 34px rgba(30, 64, 175, 0.1);
 }
 
-/* The next section glides over the pinned hero on a frosted, translucent sheet.
-   The aura remains continuous behind both sections instead of restarting. */
+/* The incoming section is an opaque foreground surface over the pinned hero. */
 .engineering-loop-section {
   /* Opaque foreground layer: the hero is covered, never faded out. */
   background:
