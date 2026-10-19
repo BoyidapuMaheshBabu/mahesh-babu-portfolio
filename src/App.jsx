@@ -42,6 +42,28 @@ const engineeringSteps = [
 export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollCueVisible, setScrollCueVisible] = useState(false);
+  const [introPhase, setIntroPhase] = useState('arrival');
+  const [identityTagsVisible, setIdentityTagsVisible] = useState(false);
+
+  // Choreograph the opening: clean name arrival, TechText assembly, then role labels.
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    if (prefersReducedMotion) {
+      setIntroPhase('tech');
+      setIdentityTagsVisible(true);
+      return undefined;
+    }
+
+    const prepareTechText = window.setTimeout(() => setIntroPhase('arming'), 900);
+    const activateTechText = window.setTimeout(() => setIntroPhase('tech'), 1000);
+    const revealIdentityTags = window.setTimeout(() => setIdentityTagsVisible(true), 2100);
+
+    return () => {
+      window.clearTimeout(prepareTechText);
+      window.clearTimeout(activateTechText);
+      window.clearTimeout(revealIdentityTags);
+    };
+  }, []);
 
   useEffect(() => {
     const updateScrollProgress = () => {
@@ -118,10 +140,14 @@ export default function App() {
           Mahesh Babu — AI-Native Software Engineer and Product Builder
         </h1>
 
-        <div className="identity-lockup" data-reveal>
-          <div className="wordmark" aria-hidden="true">
+        <div className={`identity-lockup${identityTagsVisible ? ' is-tags-visible' : ''}`}>
+          <div className={`wordmark${introPhase === 'tech' ? ' wordmark--tech-active' : ''}`} aria-hidden="true">
+            <span className={`wordmark-arrival${introPhase === 'tech' ? ' is-handoff' : ''}`}>
+              MAHESH BABU
+            </span>
             <TechText
               text="MAHESH BABU"
+              className="wordmark-tech-layer"
               fontFamily="'Oxanium', sans-serif"
               fontWeight={600}
               fontSize={260}
@@ -132,7 +158,8 @@ export default function App() {
               dashLength={4}
               dashGap={2}
               specks={15}
-              intro="none"
+              intro={introPhase === 'arrival' ? 'none' : 'assemble'}
+              introDuration={0.95}
               clickKick
               guides={false}
             />
